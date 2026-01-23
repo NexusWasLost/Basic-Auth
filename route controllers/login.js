@@ -25,7 +25,7 @@ async function login(req, res) {
             return res.status(404).json({ message: "No valid user found !" });
 
         //check password
-        if(!verifyPassword)
+        if(!verifyPassword(password, user.password))
             return res.status(401).json({ message: "Password is incorrect !" });
 
         res.status(200).json({

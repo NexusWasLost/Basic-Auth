@@ -5,7 +5,7 @@ export async function hashPassword(password){
     return hashedPassword;
 }
 
-export async function verifyPassword(storedPassword, incomingPassword){
+export async function verifyPassword(incomingPassword, storedPassword){
     try{
         const isValid = await argon2.verify(storedPassword, incomingPassword);
         return isValid;
