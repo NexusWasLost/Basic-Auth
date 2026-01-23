@@ -2,10 +2,13 @@ import express from "express";
 import userModel from "../schema.js";
 import { hashPassword } from "../utils/pass.js"
 import { testMail, testPass } from "../utils/validator.js";
+import { createPayload } from "../utils/payload.js"
+import { generateToken } from "../middlewares/token.js";
+import { checkReqBody } from "../middlewares/err.js";
 
 const router = express.Router();
 
-router.post("/signup", signup);
+router.post("/signup", checkReqBody, signup);
 
 export default router;
 
@@ -19,11 +22,11 @@ async function signup(req, res) {
             return res.status(400).json({ message: "Email and password must be provided !" });
 
         //check if mail is a valid one
-        if(!testMail(email))
+        if (!testMail(email))
             return res.status(400).json({ message: "Email Must be valid !" });
 
         //check if user with mail already exists
-        if(await userModel.findOne({ email: email }))
+        if (await userModel.findOne({ email: email }))
             return res.status(409).json({ message: "Email already registered !" });
 
         //password validation check
@@ -35,17 +38,20 @@ async function signup(req, res) {
 
         await user.save();
 
+        //create payload and generate token
+        const payload = createPayload(user.id.toString(), user.email);
+        const token = generateToken(payload, "10m");
+
         res.status(201).json({
-            message: "User Created Successfully"
+            message: "User Created Successfully",
+            token: token
         });
 
     }
     catch (error) {
         console.log("error: ", error);
-        res.status(500).
-            json(
-                {
-                    message: "Oops 😳 ! Some Error Occured !"
-                });
+        res.status(500).json({
+            message: "Oops 😳 ! Some Error Occured !"
+        });
     }
 }

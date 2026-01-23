@@ -1,10 +1,13 @@
 import express from "express";
 import userModel from "../schema.js";
 import { verifyPassword } from "../utils/pass.js";
+import { createPayload } from "../utils/payload.js";
+import { generateToken } from "../middlewares/token.js";
+import { checkReqBody } from "../middlewares/err.js";
 
 const router = express.Router();
 
-router.post("/login", login);
+router.post("/login", checkReqBody, login);
 
 export default router;
 
@@ -13,7 +16,7 @@ async function login(req, res) {
 
         const { email, password } = req.body;
 
-        if(!email || !password)
+        if (!email || !password)
             return res.status(400).json({ message: "Email and Password are required !" });
 
         //look for the user
@@ -25,23 +28,22 @@ async function login(req, res) {
             return res.status(404).json({ message: "No valid user found !" });
 
         //check password
-        if(!verifyPassword(password, user.password))
+        if (!await verifyPassword(password, user.password))
             return res.status(401).json({ message: "Password is incorrect !" });
+
+        //create payload and generate token
+        const payload = createPayload(user.id.toString(), user.email);
+        const token = generateToken(payload, "10m");
 
         res.status(200).json({
             message: "User Logged in Successfully ✅ !",
-            user: {
-                email: user.email,
-                name: user.name
-            }
+            token: token
         });
     }
     catch (error) {
         console.log("error: ", error);
-        res.status(500).
-            json(
-                {
-                    message: "Oops 😳 ! Some Error Occured !"
-                });
+        res.status(500).json({
+            message: "Oops 😳 ! Some Error Occured !"
+        });
     }
 }
