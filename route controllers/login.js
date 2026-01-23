@@ -14,7 +14,7 @@ async function login(req, res) {
         const { email, password } = req.body;
 
         if(!email || !password)
-            return res.status(400).json({ ErrMsg: "Email and Password are required !" });
+            return res.status(400).json({ message: "Email and Password are required !" });
 
         //look for the user
         const user = await userModel.findOne({
@@ -30,7 +30,10 @@ async function login(req, res) {
 
         res.status(200).json({
             message: "User Logged in Successfully ✅ !",
-            user: user
+            user: {
+                email: user.email,
+                name: user.name
+            }
         });
     }
     catch (error) {
@@ -38,7 +41,7 @@ async function login(req, res) {
         res.status(500).
             json(
                 {
-                    ErrMsg: "Oops 😳 ! Some Error Occured !"
+                    message: "Oops 😳 ! Some Error Occured !"
                 });
     }
 }
