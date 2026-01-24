@@ -1,5 +1,6 @@
 import express from "express";
 import userModel from "../schema.js";
+import { conf } from "../config.js";
 import { verifyPassword } from "../utils/pass.js";
 import { createPayload } from "../utils/payload.js";
 import { generateToken } from "../middlewares/token.js";
@@ -33,7 +34,7 @@ async function login(req, res) {
 
         //create payload and generate token
         const payload = createPayload(user.id.toString(), user.email);
-        const token = generateToken(payload, "10m");
+        const token = generateToken(payload);
 
         res.status(200).json({
             message: "User Logged in Successfully ✅ !",

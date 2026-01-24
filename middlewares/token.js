@@ -39,6 +39,6 @@ export function verifyToken(req, res, next){
     }
 }
 
-export function generateToken(payload, expiry) {
-    return jwt.sign(payload, conf.JWT_KEY, { expiresIn: `${expiry}` });
+export function generateToken(payload) {
+    return jwt.sign(payload, conf.JWT_KEY, { expiresIn: conf.JWT_EXPIRES_IN });
 }
