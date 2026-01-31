@@ -15,6 +15,7 @@ export default router;
 async function update(req, res) {
     try {
 
+        //expected params: newName, newEmail, password
         const user_id = req.user.sub;
 
         let user = await userModel.findById({ _id: user_id });
@@ -28,7 +29,6 @@ async function update(req, res) {
             })
 
         let update = {};
-        //update params to DB field map
         let allowedFields = {
             newEmail: "email",
             newName: "name"
@@ -43,8 +43,10 @@ async function update(req, res) {
             }
         }
         /*
-        Update acts as the object and allowedFields contains the map where
-        key is what req.body has and value is the field name in DB;
+        From the expected params (newName, newEmail), we map this to DB field name.
+        That is: newEmail (as in param) -> email (as in DB schema)
+        this helps to directly set values by doing { $set: update }
+        and removes the need to manually map things
         */
 
         //When nothing is there to update
