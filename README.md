@@ -88,7 +88,7 @@ The `token` is the JWT returned form the `/api/signup` or `/api/login` endpoint.
 - Clone the Repo
 
 ```shell
-https://github.com/username/Basic_Auth
+https://github.com/NexusWasLost/Basic_Auth
 ```
 
 - Install dependencies
